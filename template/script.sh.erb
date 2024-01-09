@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-# Load the required environment
-setup_env () {
-  # Additional environment which could be moved into a module
-  # Change these to suit
-  export RSTUDIO_SERVER_IMAGE="/apps/rserver-launcher-centos7.simg"
-  export SINGULARITY_BINDPATH="/etc,/media,/mnt,/opt,/srv,/usr,/var"
-  export PATH="$PATH:/usr/lib/rstudio-server/bin"
-  export SINGULARITYENV_PATH="$PATH"
-  # In Singularity 3.5.x it became necessary to explicitly pass LD_LIBRARY_PATH
-  # to the singularity process
-  export SINGULARITYENV_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
-}
-setup_env
-
 #
 # Start RStudio Server
 #
@@ -44,21 +30,43 @@ chmod 700 "${RSESSION_WRAPPER_FILE}"
 # Set working directory to home directory
 cd "${HOME}"
 
-export TMPDIR="$(mktemp -d)"
+<%- unless context.modules.blank? -%>
+# Purge the module environment to avoid conflicts
+module purge
 
-mkdir -p "$TMPDIR/rstudio-server"
-python -c 'from uuid import uuid4; print(uuid4())' > "$TMPDIR/rstudio-server/secure-cookie-key"
-chmod 0600 "$TMPDIR/rstudio-server/secure-cookie-key"
+# Load the require modules
+module load <%= context.modules %>
+
+# List loaded modules
+module list
+<%- end -%>
+
+export TMPDIR="$(mktemp -d)"
+export RSTUDIO_DATA_DIR="$TMPDIR/rstudio-server"
+mkdir -p "${RSTUDIO_DATA_DIR}"
+export RSTUDIO_COOKIE_FILE="${RSTUDIO_DATA_DIR}/secure-cookie-key"
+python3 -c 'from uuid import uuid4; print(uuid4())' > "${RSTUDIO_COOKIE_FILE}"
+chmod 0600 "${RSTUDIO_COOKIE_FILE}"
+export DB_CONF_FILE="${RSTUDIO_DATA_DIR}/rstudio-db.conf"
+cp "${RSTUDIO_ROOT}/extras/conf/database.conf" "${DB_CONF_FILE}"
+perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=${RSTUDIO_DATA_DIR}@" "${DB_CONF_FILE}"
 
 set -x
 # Launch the RStudio Server
 echo "Starting up rserver..."
 
-singularity run -B "$TMPDIR:/tmp" "$RSTUDIO_SERVER_IMAGE" \
- --www-port "${port}" \
- --auth-none 0 \
- --auth-pam-helper-path "${RSTUDIO_AUTH}" \
- --auth-encrypt-password 0 \
- --rsession-path "${RSESSION_WRAPPER_FILE}"
+rserver \
+  --www-port "${port}" \
+  --database-config-file "${DB_CONF_FILE}" \
+  --auth-none 0 \
+  --auth-pam-helper-path "${RSTUDIO_AUTH}" \
+  --auth-encrypt-password 0 \
+  --auth-pam-require-password-prompt 0 \
+  --server-user $USER \
+  --secure-cookie-key-file "${RSTUDIO_COOKIE_FILE}" \
+  --server-data-dir "${RSTUDIO_DATA_DIR}" \
+  --server-pid-file="${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
+  --rsession-path "${RSESSION_WRAPPER_FILE}" \
+  --rsession-which-r "${RSTUDIO_WHICH_R}" \
+  --rsession-ld-library-path "${CONDA_PREFIX}/lib"
 
-echo 'Singularity as exited...'
