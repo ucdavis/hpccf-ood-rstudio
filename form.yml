@@ -9,3 +9,7 @@ form:
 
 attributes:
   modules: "R rstudio-server"
+  bc_account:
+    help: "Enter slurm group account name (i.e. adamgrp)."
+  bc_queue:
+    help: "Enter slurm partition name (i.e. low, med, high, gpuh, etc)."
