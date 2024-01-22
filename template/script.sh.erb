@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 #
 # Start RStudio Server
@@ -12,7 +12,7 @@ export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
 (
 umask 077
 sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
-  #!/usr/bin/env bash
+  #!/bin/bash
 
   # Log all output from this script
   export RSESSION_LOG_FILE="${PWD}/rsession.log"
@@ -65,7 +65,7 @@ rserver \
   --server-user $USER \
   --secure-cookie-key-file "${RSTUDIO_COOKIE_FILE}" \
   --server-data-dir "${RSTUDIO_DATA_DIR}" \
-  --server-pid-file="${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
+  --server-pid-file "${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
   --rsession-path "${RSESSION_WRAPPER_FILE}" \
   --rsession-which-r "${RSTUDIO_WHICH_R}" \
   --rsession-ld-library-path "${CONDA_PREFIX}/lib"
