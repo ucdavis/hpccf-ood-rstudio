@@ -4,4 +4,11 @@ batch_connect:
   conn_params:
     - csrf_token
 script:
+  native:
+    - "--cpus-per-task"
+    - "<%= cores %>"
+    - "--mem"
+    - "<%= mem %>G"
+  job_environment:
+    OOD_TEST_VAL: "grunky scripples"
   copy_environment: true

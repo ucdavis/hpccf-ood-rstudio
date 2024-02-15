@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #
 # Start RStudio Server
 #
@@ -27,19 +25,30 @@ EOL
 )
 chmod 700 "${RSESSION_WRAPPER_FILE}"
 
-# Set working directory to home directory
-cd "${HOME}"
+setup_env() {
 
-<%- unless context.modules.blank? -%>
-# Purge the module environment to avoid conflicts
-module purge
+  # Set working directory to home directory
+  cd "${HOME}"
 
-# Load the require modules
-module load <%= context.modules %>
+  # Purge the module environment to avoid conflicts
+  module purge
 
-# List loaded modules
-module list
-<%- end -%>
+  # Load the require modules
+  module load <%= context.modules %>
+  <%- if context.conda_env -%>
+  # Load conda module
+  module load conda/latest
+
+  # activate conda env
+  conda activate <%= context.conda_env %> 
+  <%- else -%>
+  # Load R module
+  module load R
+  <%- end -%>
+  
+  # List loaded modules
+  module list
+}
 
 export TMPDIR="$(mktemp -d)"
 export RSTUDIO_DATA_DIR="$TMPDIR/rstudio-server"
@@ -48,8 +57,11 @@ export RSTUDIO_COOKIE_FILE="${RSTUDIO_DATA_DIR}/secure-cookie-key"
 python3 -c 'from uuid import uuid4; print(uuid4())' > "${RSTUDIO_COOKIE_FILE}"
 chmod 0600 "${RSTUDIO_COOKIE_FILE}"
 export DB_CONF_FILE="${RSTUDIO_DATA_DIR}/rstudio-db.conf"
-cp "${RSTUDIO_ROOT}/extras/conf/database.conf" "${DB_CONF_FILE}"
-perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=${RSTUDIO_DATA_DIR}@" "${DB_CONF_FILE}"
+if [ ! -e $DB_CONF_FILE ]
+then
+  cp "${RSTUDIO_ROOT}/extras/conf/database.conf" "${DB_CONF_FILE}"
+  perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=${RSTUDIO_DATA_DIR}@" "${DB_CONF_FILE}"
+fi
 
 set -x
 # Launch the RStudio Server
@@ -67,6 +79,8 @@ rserver \
   --server-data-dir "${RSTUDIO_DATA_DIR}" \
   --server-pid-file "${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
   --rsession-path "${RSESSION_WRAPPER_FILE}" \
+<%- if context.conda_env -%>
   --rsession-which-r "${RSTUDIO_WHICH_R}" \
   --rsession-ld-library-path "${CONDA_PREFIX}/lib"
-
+  <%- end -%>
+  "$@"
