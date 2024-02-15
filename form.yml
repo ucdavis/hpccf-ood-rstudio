@@ -2,14 +2,50 @@
 cluster: "farm"
 form:
   - modules
-  - bc_account
-  - bc_queue
+  - auto_accounts
+  - auto_queues
+  - cores
+  - mem
+  - auto_modules_R
+  - conda_env
   - bc_num_hours
   - bc_email_on_started
-
 attributes:
-  modules: "R rstudio-server"
-  bc_account:
-    help: "Enter slurm group account name (i.e. adamgrp)."
-  bc_queue:
-    help: "Enter slurm partition name (i.e. low, med, high, gpuh, etc)."
+  modules: "rstudio-server"
+  auto_accounts:
+    help: |
+      Select the slurm group account (i.e adamgrp)
+  auto_queues:
+    help: |
+      Select a slurm partition. **We strongly recommend a high priority partition**
+  cores:
+    widget: "number_field"
+    label: "Number of cores"
+    value: 8
+    min: 1
+    max: 256
+    help: |
+      Enter the number of cores needed for your job
+  mem:
+    widget: "number_field"
+    label: "Amount of memory"
+    value: 32
+    min: 4
+    max: 4096
+    help: |
+      Enter the amount of RAM in GB you need for your job
+  auto_modules_R:
+    required: false
+    help: |
+      Select what version of R to use (optional)
+  conda_env:
+    widget: "text_field"
+    label: "Conda environment"
+    required: false
+    help: |
+      Enter a specific conda environment to activate as your R installation. (Optional)
+  bc_num_hours:
+    max: 60
+    help: |
+      Your job will be automatically killed after this amount of time
+
