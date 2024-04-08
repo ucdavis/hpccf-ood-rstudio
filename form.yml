@@ -9,9 +9,12 @@ form:
   - conda_env
   - r_version
   - bc_num_hours
+  - working_dir
   - bc_email_on_started
+
 attributes:
   modules: "rstudio-server"
+  extra_rserver_args: ""
   auto_accounts:
     help: |
       Select the slurm group account (i.e adamgrp)
@@ -53,4 +56,10 @@ attributes:
     max: 60
     help: |
       Your job will be automatically killed after this amount of time
-
+  working_dir:
+    label: "Working Directory"
+    data-filepicker: true
+    data-target-file-type: dirs  # Valid values are: files, dirs, or both
+    readonly: false
+    help: |
+      Select the directory wherein you want to work (defaults to $HOME)
