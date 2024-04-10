@@ -11,3 +11,9 @@ password="$(create_passwd 16)"
 export csrf_token=<%= SecureRandom.uuid %>
 
 export RSTUDIO_PASSWORD="${password}"
+
+# Export prereqs for rserver configs and config dirs
+export RSTUDIO_CONFIG_DIR="$HOME/.config/rstudio-server"
+export RSTUDIO_DATA_DIR="$HOME/.cache/rstudio-server"
+export RSTUDIO_COOKIE_FILE="$RSTUDIO_DATA_DIR/secure-cookie-key"
+export DB_CONF_FILE="$RSTUDIO_CONFIG_DIR/rstudio-database.conf"
