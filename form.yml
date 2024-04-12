@@ -62,6 +62,5 @@ attributes:
     data-filepicker: true
     data-target-file-type: dirs  # Valid values are: files, dirs, or both
     readonly: false
-    value: "$HOME"
     help: |
       Select the directory wherein you want to work (defaults to $HOME)
