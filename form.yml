@@ -10,12 +10,10 @@ form:
   - r_version
   - bc_num_hours
   - working_dir
-  - extra_rserver_args
   - bc_email_on_started
 
 attributes:
   modules: "rstudio-server"
-  extra_rserver_args: "${@}"
   auto_accounts:
     help: |
       Select the slurm group account (i.e adamgrp)

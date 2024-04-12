@@ -22,7 +22,7 @@ setup_env() {
   # Load the require modules
   module load <%= context.modules %>
 
-  <% if context.conda_env != "" %>
+  <% if !context.conda_env.blank? %>
   # Load conda module
   module load conda/latest
   # Activate conda env
@@ -33,7 +33,7 @@ setup_env() {
   <% end %>
   
   # List loaded modules
-  # module list
+  module list
 }
 
 setup_env
@@ -43,6 +43,8 @@ export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
 (
 umask 077
 sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
+  #!/bin/bash
+
   # Log all output from this script
   export RSESSION_LOG_FILE="${PWD}/rsession.log"
 
@@ -54,6 +56,8 @@ sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
   exec rsession --r-libs-user "${R_LIBS_USER}" "\${@}"
 EOL
 )
+chmod 700 "${RSESSION_WRAPPER_FILE}"
+
 
 mkdir -p "$RSTUDIO_DATA_DIR"
 mkdir -p "$RSTUDIO_CONFIG_DIR"
@@ -66,27 +70,26 @@ then
 fi
 
 # PAM auth helper used by RStudio
-export RSTUDIO_AUTH="$RSTUDIO_SERVER_UTILS/rstudio_auth.sh"
+export RSTUDIO_AUTH="${PWD}/bin/auth"
 
-# Launch the RStudio Server
 set -x
+# Launch the RStudio Server
 echo "Starting up rserver..."
 
 rserver \
-  --www-port "$port" \
-  --database-config-file "$DB_CONF_FILE" \
+  --www-port "${port}" \
+  --database-config-file "${DB_CONF_FILE}" \
   --auth-none 0 \
-  --auth-pam-helper-path "$RSTUDIO_AUTH" \
+  --auth-pam-helper-path "${RSTUDIO_AUTH}" \
   --auth-encrypt-password 0 \
   --auth-pam-require-password-prompt 0 \
-  --server-user "$USER" \
-  --secure-cookie-key-file "$RSTUDIO_COOKIE_FILE" \
-  --server-data-dir "$RSTUDIO_DATA_DIR" \
-  --server-pid-file "$RSTUDIO_DATA_DIR/rstudio-server.pid" \
-  --rsession-path "$RSESSION_WRAPPER_FILE" \
-  --server-working-dir "<%= working_dir.to_s %>" \
-  <% if context.conda_env != "" %>
-  --rsession-which-r "$RSTUDIO_WHICH_R" \
-  --rsession-ld-library-path "$CONDA_PREFIX/lib" \
+  --server-user $USER \
+  --secure-cookie-key-file "${RSTUDIO_COOKIE_FILE}" \
+  --server-data-dir "${RSTUDIO_DATA_DIR}" \
+  --server-pid-file "${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
+  --rsession-path "${RSESSION_WRAPPER_FILE}" \
+  <% if !context.conda_env.blank? %>
+  --rsession-which-r "${RSTUDIO_WHICH_R}" \
+  --rsession-ld-library-path "${CONDA_PREFIX}/lib" \
   <% end %>
-  "$@"
+  --server-working-dir "<%= working_dir.to_s %>"
