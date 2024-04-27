@@ -41,7 +41,7 @@ attributes:
     label: "Conda environment"
     required: false
     help: |
-      Enter a specific conda environment (i.e conda/pandas/2.1.4) to activate as your R installation. (Optional)
+      Enter a specific conda environment (i.e r-4.3.2) to activate as your R installation. (Optional)
   r_version:
     widget: "select"
     label: "R version"
