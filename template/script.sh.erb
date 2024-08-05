@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/usr/bin/env bash
 
 #
 # Start RStudio Server
@@ -46,7 +46,7 @@ export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
 (
 umask 077
 sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
-  #!/bin/bash
+  #!/usr/bin/env bash
 
   # Log all output from this script
   export RSESSION_LOG_FILE="${PWD}/rsession.log"
