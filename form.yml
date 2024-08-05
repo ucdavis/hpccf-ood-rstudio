@@ -6,14 +6,21 @@ form:
   - auto_queues
   - cores
   - mem
+  - gpu_num
   - conda_env
   - r_version
   - bc_num_hours
+  - extra_modules
   - working_dir
   - bc_email_on_started
 
 attributes:
   modules: "rstudio-server"
+  extra_modules:
+    widget: text_area
+    label: "Additional Modules"
+    help: |
+      If needed, enter any additional modules to be loaded separated by spaces (i.e cuda/11.7.1 nvhpc/23.1 )
   auto_accounts:
     help: |
       Select the slurm group account (i.e adamgrp)
@@ -36,6 +43,14 @@ attributes:
     max: 4096
     help: |
       Enter the amount of RAM in GB you need for your job
+  gpu_num:
+    widget: "number_field"
+    label: "Number of GPUs"
+    value: 0
+    min: 0
+    max: 8
+    help: |
+      Enter the amount of GPUs needed for your job
   conda_env:
     widget: "text_field"
     label: "Conda environment"
