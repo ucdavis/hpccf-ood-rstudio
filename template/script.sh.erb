@@ -20,7 +20,7 @@ setup_env() {
   module purge
 
   # Load the require modules
-  module load <%= context.modules %>
+  module load <%= context.modules %> <%= context.extra_modules %>
 
   <% unless context.conda_env.blank? %>
   # Load conda module
