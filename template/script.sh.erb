@@ -22,16 +22,8 @@ setup_env() {
   # Load the require modules
   module load <%= context.modules %> <%= context.extra_modules %>
 
-  <% unless context.conda_env.blank? %>
-  # Load conda module
-  module load conda/latest
-
   # Activate conda env
   conda activate <%= context.conda_env %>  
-  <% else %>
-  # Load R module
-  module load <%= context.r_version %>
-  <% end %>
   
   # List loaded modules
   module list

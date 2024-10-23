@@ -8,14 +8,14 @@ form:
   - mem
   - gpu_num
   - conda_env
-  - r_version
   - bc_num_hours
   - extra_modules
   - working_dir
   - bc_email_on_started
 
 attributes:
-  modules: "rstudio-server"
+  modules: "rstudio-server conda"
+  conda_env: "r-4.3.3"
   extra_modules:
     widget: text_area
     label: "Additional Modules"
@@ -51,21 +51,6 @@ attributes:
     max: 8
     help: |
       Enter the amount of GPUs needed for your job
-  conda_env:
-    widget: "text_field"
-    label: "Conda environment"
-    required: false
-    help: |
-      Enter a specific conda environment (i.e r-4.3.2) to activate as your R installation. (Optional)
-  r_version:
-    widget: "select"
-    label: "R version"
-    options:
-      - [ "latest", "R/latest" ]
-      - [ "4.3.2", "R/4.3.2" ]
-      - [ "4.2.3", "R/4.2.3" ]
-      - [ "3.6.3", "R/3.6.3" ]
-    value: "latest"
   bc_num_hours:
     max: 60
     help: |
