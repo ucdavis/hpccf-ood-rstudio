@@ -14,7 +14,7 @@ form:
   - bc_email_on_started
 
 attributes:
-  modules: "rstudio-server conda"
+  modules: "rstudio conda"
   conda_env: "r-4.3.3"
   extra_modules:
     widget: text_area
