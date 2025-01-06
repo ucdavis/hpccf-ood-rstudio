@@ -15,7 +15,7 @@ form:
   - bc_email_on_started
 
 attributes:
-  modules: "rstudio-server"
+  modules: "rstudio"
   extra_modules:
     widget: text_area
     label: "Additional Modules"
