@@ -22,13 +22,11 @@ setup_env() {
   # Load the require modules
   module load <%= context.modules %> <%= context.extra_modules %>
 
-  # Activate conda env
-  conda activate <%= context.conda_env %>  
-  
+  # Activate conda env for R
+  conda activate <%= context.conda_env %>
+
   # List loaded modules
   module list
-  # Show conda env
-  echo $CONDA_PREFIX
 }
 
 setup_env

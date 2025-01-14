@@ -15,7 +15,6 @@ form:
 
 attributes:
   modules: "rstudio conda"
-  conda_env: "r-4.3.3"
   extra_modules:
     widget: text_area
     label: "Additional Modules"
@@ -51,6 +50,13 @@ attributes:
     max: 8
     help: |
       Enter the amount of GPUs needed for your job
+  conda_env:
+    widget: "text_field"
+    label: "Conda environment"
+    value: "r-4.3.3"
+    help: |
+      Enter a specific conda environment (i.e r-4.3.3) to activate as your R ins
+tallation. (Optional)
   bc_num_hours:
     max: 60
     help: |
