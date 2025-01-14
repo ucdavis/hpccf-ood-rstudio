@@ -55,8 +55,7 @@ attributes:
     label: "Conda environment"
     value: "r-4.3.3"
     help: |
-      Enter a specific conda environment (i.e r-4.3.3) to activate as your R ins
-tallation. (Optional)
+      Enter a specific conda environment (i.e r-4.3.3) to activate as your R installation. (Optional)
   bc_num_hours:
     max: 60
     help: |
