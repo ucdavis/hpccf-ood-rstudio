@@ -22,21 +22,11 @@ setup_env() {
   # Load the require modules
   module load <%= context.modules %> <%= context.extra_modules %>
 
-  <% unless context.conda_env.blank? %>
-  # Load conda module
-  module load conda/latest
+  # Activate conda env for R
+  conda activate <%= context.conda_env %>
 
-  # Activate conda env
-  conda activate <%= context.conda_env %>  
-  <% else %>
-  # Load R module
-  module load <%= context.r_version %>
-  <% end %>
-  
   # List loaded modules
   module list
-  # Show conda env
-  echo $CONDA_PREFIX
 }
 
 setup_env
@@ -91,8 +81,6 @@ rserver \
   --server-data-dir "${RSTUDIO_DATA_DIR}" \
   --server-pid-file "${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
   --rsession-path "${RSESSION_WRAPPER_FILE}" \
-  <% unless context.conda_env.blank? %> \
   --rsession-which-r "${RSTUDIO_WHICH_R}" \
   --rsession-ld-library-path "${CONDA_PREFIX}/lib" \
-  <% end %> \
   --server-working-dir "<%= working_dir.to_s %>"
