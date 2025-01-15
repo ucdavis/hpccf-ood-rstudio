@@ -54,8 +54,9 @@ attributes:
     widget: "text_field"
     label: "Conda environment"
     value: "r-4.3.3"
+    required: true
     help: |
-      Enter a specific conda environment (i.e r-4.3.3) to activate as your R installation. (Optional)
+      Enter a specific conda environment (i.e r-4.3.3) to activate as your R installation.
   bc_num_hours:
     max: 60
     help: |
