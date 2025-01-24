@@ -7,6 +7,7 @@ form:
   - cores
   - mem
   - gpu_num
+  - gpu_type
   - conda_env
   - bc_num_hours
   - extra_modules
@@ -50,6 +51,12 @@ attributes:
     max: 8
     help: |
       Enter the amount of GPUs needed for your job
+  gpu_type:
+    widget: "text_field"
+    label: "Type of GPU(s)"
+    help: |
+      Enter a constraint on the GPU type (i.e. a5500).
+      **Advanced use only**, do not use unless you know what you're doing. (optional)
   conda_env:
     widget: "text_field"
     label: "Conda environment"
