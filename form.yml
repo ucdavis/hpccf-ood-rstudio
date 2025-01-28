@@ -11,7 +11,7 @@ form:
   - conda_env
   - bc_num_hours
   - extra_modules
-  - working_dir
+  - path
   - bc_email_on_started
 
 attributes:
@@ -68,10 +68,12 @@ attributes:
     max: 60
     help: |
       Your job will be automatically killed after this amount of time
-  working_dir:
+  path:
+    widget: "path_selector"
     label: "Working Directory"
-    data-filepicker: true
-    data-target-file-type: dirs  # Valid values are: files, dirs, or both
-    readonly: false
+    show_hidden: true
+    show_files: false
+    favorites:
+      - /fs/scratch
     help: |
-      Select the directory wherein you want to work (defaults to $HOME)
+      Select the directory wherein you want to open and use this app (defaults to $HOME)
