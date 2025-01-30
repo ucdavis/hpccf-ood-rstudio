@@ -76,13 +76,11 @@ rserver \
   --auth-pam-helper-path "${RSTUDIO_AUTH}" \
   --auth-encrypt-password 0 \
   --auth-pam-require-password-prompt 0 \
-  --server-user $USER \
+  --server-user "${USER}" \
   --secure-cookie-key-file "${RSTUDIO_COOKIE_FILE}" \
   --server-data-dir "${RSTUDIO_DATA_DIR}" \
   --server-pid-file "${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
   --rsession-path "${RSESSION_WRAPPER_FILE}" \
-  <% unless context.conda_env.blank? %> \
   --rsession-which-r "${RSTUDIO_WHICH_R}" \
   --rsession-ld-library-path "${CONDA_PREFIX}/lib" \
-  <% end %> \
   --server-working-dir "<%= working_dir.to_s %>"
