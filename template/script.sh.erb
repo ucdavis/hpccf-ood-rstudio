@@ -20,6 +20,25 @@ setup_env() {
 
 setup_env
 
+# Generate an `rsession` wrapper script
+export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
+(
+umask 077
+sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
+  #!/usr/bin/env bash
+
+  # Log all output from this script
+  export RSESSION_LOG_FILE="${PWD}/rsession.log"
+
+  exec &>>"\${RSESSION_LOG_FILE}"
+
+  # Launch the original command
+  echo "Launching rsession..."
+  set -x
+  exec rsession --r-libs-user "${R_LIBS_USER}" "\${@}"
+EOL
+)
+
 mkdir -p "$RSTUDIO_DATA_DIR"
 mkdir -p "$RSTUDIO_CONFIG_DIR"
 python3 -c 'from uuid import uuid4; print(uuid4())' > "$RSTUDIO_COOKIE_FILE"

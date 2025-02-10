@@ -20,25 +20,6 @@ export R_LIBS_USER="~/R/x86_64-conda-linux-gnu/<%= context.conda_env %>"
 # PAM auth helper used by RStudio
 export RSTUDIO_AUTH="${PWD}/bin/auth"
 
-# Generate an `rsession` wrapper script
-export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
-(
-umask 077
-sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
-  #!/usr/bin/env bash
-
-  # Log all output from this script
-  export RSESSION_LOG_FILE="${PWD}/rsession.log"
-
-  exec &>>"\${RSESSION_LOG_FILE}"
-
-  # Launch the original command
-  echo "Launching rsession..."
-  set -x
-  exec rsession --r-libs-user "${R_LIBS_USER}" "\${@}"
-EOL
-)
-
 # The `$RSERVER_CONF` environment variable is exported as it is used in the main
 # `script.sh.erb` file when launching R Studio Server.
 export RSERVER_CONF="${PWD}/rserver.conf"
