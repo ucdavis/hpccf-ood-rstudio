@@ -10,11 +10,56 @@ password="$(create_passwd 16)"
 # rstudio 1.4+ needs a csrf token
 export csrf_token=<%= SecureRandom.uuid %>
 
-export RSTUDIO_PASSWORD="${password}"
-
 # Export prereqs for rserver configs and config dirs
+export RSTUDIO_PASSWORD="${password}"
 export RSTUDIO_CONFIG_DIR="$HOME/.config/rstudio-server"
 export RSTUDIO_DATA_DIR="$HOME/.cache/rstudio-server"
 export RSTUDIO_COOKIE_FILE="$RSTUDIO_DATA_DIR/secure-cookie-key"
 export DB_CONF_FILE="$RSTUDIO_CONFIG_DIR/rstudio-database.conf"
 export R_LIBS_USER="~/R/x86_64-conda-linux-gnu/<%= context.conda_env %>"
+# PAM auth helper used by RStudio
+export RSTUDIO_AUTH="${PWD}/bin/auth"
+
+# Generate an `rsession` wrapper script
+export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
+(
+umask 077
+sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
+  #!/usr/bin/env bash
+
+  # Log all output from this script
+  export RSESSION_LOG_FILE="${PWD}/rsession.log"
+
+  exec &>>"\${RSESSION_LOG_FILE}"
+
+  # Launch the original command
+  echo "Launching rsession..."
+  set -x
+  exec rsession --r-libs-user "${R_LIBS_USER}" "\${@}"
+EOL
+)
+
+# The `$RSERVER_CONF` environment variable is exported as it is used in the main
+# `script.sh.erb` file when launching R Studio Server.
+export RSERVER_CONF="${PWD}/rserver.conf"
+
+# Generate rserver configuration file with secure file permissions
+(
+umask 077
+cat > "${RSERVER_CONF}" << EOL
+www-port="${port}"
+database-config-file="${DB_CONF_FILE}"
+auth-none=0
+auth-pam-helper-path="${RSTUDIO_AUTH}"
+auth-encrypt-password=0
+auth-pam-require-password-prompt=0
+server-user=$USER
+secure-cookie-key-file="${RSTUDIO_COOKIE_FILE}"
+server-data-dir="${RSTUDIO_DATA_DIR}"
+server-pid-file="${RSTUDIO_DATA_DIR}/rstudio-server.pid"
+rsession-path="${RSESSION_WRAPPER_FILE}"
+rsession-which-r="${RSTUDIO_WHICH_R}"
+rsession-ld-library-path="${CONDA_PREFIX}/lib"
+server-working-dir="<%= context.path %>"
+EOL
+)
