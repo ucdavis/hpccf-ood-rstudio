@@ -20,27 +20,6 @@ setup_env() {
 
 setup_env
 
-# Generate an `rsession` wrapper script
-export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
-(
-umask 077
-sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
-  #!/usr/bin/env bash
-
-  # Log all output from this script
-  export RSESSION_LOG_FILE="${PWD}/rsession.log"
-
-  exec &>>"\${RSESSION_LOG_FILE}"
-
-  # Launch the original command
-  echo "Launching rsession..."
-  set -x
-  exec rsession --r-libs-user "${R_LIBS_USER}" "\${@}"
-EOL
-)
-chmod 700 "${RSESSION_WRAPPER_FILE}"
-
-
 mkdir -p "$RSTUDIO_DATA_DIR"
 mkdir -p "$RSTUDIO_CONFIG_DIR"
 python3 -c 'from uuid import uuid4; print(uuid4())' > "$RSTUDIO_COOKIE_FILE"
@@ -50,9 +29,6 @@ then
   cp "$RSTUDIO_ROOT/extras/conf/database.conf" "$DB_CONF_FILE"
   perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=$RSTUDIO_DATA_DIR@" "$DB_CONF_FILE"
 fi
-
-# PAM auth helper used by RStudio
-export RSTUDIO_AUTH="${PWD}/bin/auth"
 
 set -x
 # Launch the RStudio Server
