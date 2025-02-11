@@ -69,18 +69,4 @@ set -x
 # Launch the RStudio Server
 echo "Starting up rserver..."
 
-rserver \ 
-  --www-port="${port}" \ 
-  --database-config-file="${DB_CONF_FILE}" \
-  --auth-none=0 \
-  --auth-pam-helper-path="${RSTUDIO_AUTH}" \
-  --auth-encrypt-password=0 \
-  --auth-pam-require-password-prompt=0 \
-  --server-user=$USER \
-  --secure-cookie-key-file="${RSTUDIO_COOKIE_FILE}" \
-  --server-data-dir="${RSTUDIO_DATA_DIR}" \
-  --server-pid-file="${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
-  --rsession-path="${RSESSION_WRAPPER_FILE}" \
-  --rsession-which-r="${RSTUDIO_WHICH_R}" \
-  --rsession-ld-library-path="${CONDA_PREFIX}/lib" \
-  --server-working-dir="<%= context.path %>"
+rserver --config-file "$RSERVER_CONF" 
