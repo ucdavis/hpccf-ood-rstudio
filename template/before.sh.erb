@@ -10,37 +10,16 @@ password="$(create_passwd 16)"
 # rstudio 1.4+ needs a csrf token
 export csrf_token=<%= SecureRandom.uuid %>
 
-# Export prereqs for rserver configs and config dirs
+# Export env prereqs for rstudio config
 export RSTUDIO_PASSWORD="${password}"
 export RSTUDIO_CONFIG_DIR="$HOME/.config/rstudio-server"
 export RSTUDIO_DATA_DIR="$HOME/.cache/rstudio-server"
-export RSTUDIO_COOKIE_FILE="$RSTUDIO_DATA_DIR/secure-cookie-key"
 export DB_CONF_FILE="$RSTUDIO_CONFIG_DIR/rstudio-database.conf"
 export R_LIBS_USER="~/R/x86_64-conda-linux-gnu/<%= context.conda_env %>"
-# PAM auth helper used by RStudio
-export RSTUDIO_AUTH="${PWD}/bin/auth"
-
-# The `$RSERVER_CONF` environment variable is exported as it is used in the main
-# `script.sh.erb` file when launching R Studio Server.
 export RSERVER_CONF="${PWD}/rserver.conf"
-
-# Generate rserver configuration file with secure file permissions
-(
-umask 077
-cat > "${RSERVER_CONF}" << EOL
-www-port="${port}"
-database-config-file="${DB_CONF_FILE}"
-auth-none=0
-auth-pam-helper-path="${RSTUDIO_AUTH}"
-auth-encrypt-password=0
-auth-pam-require-password-prompt=0
-server-user=$USER
-secure-cookie-key-file="${RSTUDIO_COOKIE_FILE}"
-server-data-dir="${RSTUDIO_DATA_DIR}"
-server-pid-file="${RSTUDIO_DATA_DIR}/rstudio-server.pid"
-rsession-path="${RSESSION_WRAPPER_FILE}"
-rsession-which-r="${RSTUDIO_WHICH_R}"
-rsession-ld-library-path="${CONDA_PREFIX}/lib"
-server-working-dir="<%= context.path %>"
-EOL
-)
+export RSTUDIO_AUTH="${PWD}/bin/auth"
+export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
+export RSTUDIO_COOKIE_FILE="$RSTUDIO_DATA_DIR/secure-cookie-key"
+# Create cookie
+python3 -c 'from uuid import uuid4; print(uuid4())' > "$RSTUDIO_COOKIE_FILE"
+chmod 0600 "$RSTUDIO_COOKIE_FILE"
