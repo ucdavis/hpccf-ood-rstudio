@@ -10,11 +10,16 @@ password="$(create_passwd 16)"
 # rstudio 1.4+ needs a csrf token
 export csrf_token=<%= SecureRandom.uuid %>
 
+# Export env prereqs for rstudio config
 export RSTUDIO_PASSWORD="${password}"
-
-# Export prereqs for rserver configs and config dirs
 export RSTUDIO_CONFIG_DIR="$HOME/.config/rstudio-server"
 export RSTUDIO_DATA_DIR="$HOME/.cache/rstudio-server"
-export RSTUDIO_COOKIE_FILE="$RSTUDIO_DATA_DIR/secure-cookie-key"
 export DB_CONF_FILE="$RSTUDIO_CONFIG_DIR/rstudio-database.conf"
 export R_LIBS_USER="~/R/x86_64-conda-linux-gnu/<%= context.conda_env %>"
+export RSERVER_CONF="${PWD}/rserver.conf"
+export RSTUDIO_AUTH="${PWD}/bin/auth"
+export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
+export RSTUDIO_COOKIE_FILE="$RSTUDIO_DATA_DIR/secure-cookie-key"
+# Create cookie
+python3 -c 'from uuid import uuid4; print(uuid4())' > "$RSTUDIO_COOKIE_FILE"
+chmod 0600 "$RSTUDIO_COOKIE_FILE"
