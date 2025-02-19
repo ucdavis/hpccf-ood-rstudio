@@ -4,17 +4,6 @@
 # Start RStudio Server
 #
 
-<%
-# Set our working directory.
-working_dir = Pathname.new(context.working_dir)
-# Ensure that code-server always starts up in either a user defined directory or the home directory.
-if ! working_dir.exist?
-    working_dir = Pathname.new(ENV['HOME'])
-elsif working_dir.file?
-    working_dir = working_dir.parent
-end
-%>
-
 setup_env() {
   # Purge the module environment to avoid conflicts
   module purge
@@ -22,29 +11,17 @@ setup_env() {
   # Load the require modules
   module load <%= context.modules %> <%= context.extra_modules %>
 
-  <% unless context.conda_env.blank? %>
-  # Load conda module
-  module load conda/latest
+  # Activate conda env for R
+  conda activate <%= context.conda_env %>
 
-  # Activate conda env
-  conda activate <%= context.conda_env %>  
-  <% else %>
-  # Load R module
-  module load <%= context.r_version %>
-  <% end %>
-  
   # List loaded modules
   module list
-  # Show conda env
-  echo $CONDA_PREFIX
 }
 
 setup_env
 
 # Generate an `rsession` wrapper script
-export RSESSION_WRAPPER_FILE="${PWD}/rsession.sh"
 (
-umask 077
 sed 's/^ \{2\}//' > "${RSESSION_WRAPPER_FILE}" << EOL
   #!/usr/bin/env bash
 
@@ -61,38 +38,35 @@ EOL
 )
 chmod 700 "${RSESSION_WRAPPER_FILE}"
 
+# Generate rserver configuration file with secure file permissions
+(
+cat > "${RSERVER_CONF}" << EOL
+www-port=$port
+database-config-file=$DB_CONF_FILE
+auth-none=0
+auth-pam-helper-path=$RSTUDIO_AUTH
+auth-encrypt-password=0
+auth-pam-require-password-prompt=0
+server-user=$USER
+secure-cookie-key-file=$RSTUDIO_COOKIE_FILE
+server-data-dir=$RSTUDIO_DATA_DIR
+server-pid-file=$RSTUDIO_DATA_DIR/rstudio-server.pid
+rsession-path=$RSESSION_WRAPPER_FILE
+rsession-which-r=$RSTUDIO_WHICH_R
+rsession-ld-library-path=$CONDA_PREFIX/lib
+server-working-dir=<%= context.path.to_s %>
+EOL
+)
 
-mkdir -p "$RSTUDIO_DATA_DIR"
-mkdir -p "$RSTUDIO_CONFIG_DIR"
-python3 -c 'from uuid import uuid4; print(uuid4())' > "$RSTUDIO_COOKIE_FILE"
-chmod 0600 "$RSTUDIO_COOKIE_FILE"
+# Create DB if there isn't one and update data dir
 if [ ! -e $DB_CONF_FILE ]
 then
   cp "$RSTUDIO_ROOT/extras/conf/database.conf" "$DB_CONF_FILE"
   perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=$RSTUDIO_DATA_DIR@" "$DB_CONF_FILE"
 fi
 
-# PAM auth helper used by RStudio
-export RSTUDIO_AUTH="${PWD}/bin/auth"
-
 set -x
 # Launch the RStudio Server
 echo "Starting up rserver..."
 
-rserver \
-  --www-port "${port}" \
-  --database-config-file "${DB_CONF_FILE}" \
-  --auth-none 0 \
-  --auth-pam-helper-path "${RSTUDIO_AUTH}" \
-  --auth-encrypt-password 0 \
-  --auth-pam-require-password-prompt 0 \
-  --server-user $USER \
-  --secure-cookie-key-file "${RSTUDIO_COOKIE_FILE}" \
-  --server-data-dir "${RSTUDIO_DATA_DIR}" \
-  --server-pid-file "${RSTUDIO_DATA_DIR}/rstudio-server.pid" \
-  --rsession-path "${RSESSION_WRAPPER_FILE}" \
-  <% unless context.conda_env.blank? %> \
-  --rsession-which-r "${RSTUDIO_WHICH_R}" \
-  --rsession-ld-library-path "${CONDA_PREFIX}/lib" \
-  <% end %> \
-  --server-working-dir "<%= working_dir.to_s %>"
+rserver --config-file "$RSERVER_CONF" 

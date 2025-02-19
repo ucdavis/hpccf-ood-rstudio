@@ -7,15 +7,15 @@ form:
   - cores
   - mem
   - gpu_num
+  - gpu_type
   - conda_env
-  - r_version
   - bc_num_hours
   - extra_modules
-  - working_dir
+  - path
   - bc_email_on_started
 
 attributes:
-  modules: "rstudio-server"
+  modules: "rstudio conda"
   extra_modules:
     widget: text_area
     label: "Additional Modules"
@@ -51,29 +51,31 @@ attributes:
     max: 8
     help: |
       Enter the amount of GPUs needed for your job
+  gpu_type:
+    widget: "text_field"
+    label: "Type of GPU(s)"
+    help: |
+      Enter a constraint on the GPU type (i.e. a5500).
+      **Advanced use only**, do not use unless you know what you're doing. (optional)
   conda_env:
     widget: "text_field"
     label: "Conda environment"
-    required: false
+    value: "r-4.3.3"
+    required: true
     help: |
-      Enter a specific conda environment (i.e r-4.3.2) to activate as your R installation. (Optional)
-  r_version:
-    widget: "select"
-    label: "R version"
-    options:
-      - [ "latest", "R/latest" ]
-      - [ "4.3.2", "R/4.3.2" ]
-      - [ "4.2.3", "R/4.2.3" ]
-      - [ "3.6.3", "R/3.6.3" ]
-    value: "latest"
+      Enter a specific conda environment (i.e r-4.3.3) to activate as your R installation.
   bc_num_hours:
     max: 60
     help: |
       Your job will be automatically killed after this amount of time
-  working_dir:
+  path:
+    widget: "path_selector"
     label: "Working Directory"
-    data-filepicker: true
-    data-target-file-type: dirs  # Valid values are: files, dirs, or both
-    readonly: false
+    value: <%= ENV['HOME'] %>
+    show_hidden: true
+    show_files: false
+    favorites:
+      - <%= ENV['HOME'] %>
+      - /scratch
     help: |
-      Select the directory wherein you want to work (defaults to $HOME)
+      Select the directory wherein you want to open and use this app 
