@@ -26,11 +26,21 @@ function toggle_gpu_form_visibility() {
   let queue = $("#batch_connect_session_context_auto_queues");
   let gpu_num = $('#batch_connect_session_context_gpu_num');
   let gpu_type = $('#batch_connect_session_context_gpu_type');
+  let gpu_queues = [
+    "low",
+    "jalettsgrp-gpu",
+    "jawdatgrp-gpu",
+    "mmgdept-gpu",
+    "cashjngrp-gpu",
+    "mmaldogrp-gpu",
+    "cnsdept-gpu",
+    "ajfishergrp-gpu",
+  ];
 
-  toggle_visibilty_of_form_group(gpu_num, queue.val().includes("gpu"));
+  toggle_visibilty_of_form_group(gpu_num, gpu_queues.includes(queue.val()));
   gpu_num.val(0);
 
-  toggle_visibilty_of_form_group(gpu_type, queue.val().includes("gpu"));
+  toggle_visibilty_of_form_group(gpu_type, gpu_queues.includes(queue.val()));
 
   // let fields = [ gpu_num, gpu_type ];
 
