@@ -61,7 +61,7 @@ EOL
 # Create DB if there isn't one and update data dir
 if [ ! -e $DB_CONF_FILE ]
 then
-  cp "$RSTUDIO_ROOT/extras/conf/database.conf" "$DB_CONF_FILE"
+  mkdir -p "$RSTUDIO_CONFIG_DIR" && cp "$RSTUDIO_ROOT/extras/conf/database.conf" "$DB_CONF_FILE"
   perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=$RSTUDIO_DATA_DIR@" "$DB_CONF_FILE"
 fi
 
