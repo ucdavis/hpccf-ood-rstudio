@@ -44,6 +44,7 @@ cat > "${RSERVER_CONF}" << EOL
 www-port=$port
 database-config-file=$DB_CONF_FILE
 auth-none=0
+auth-timeout-minutes=0
 auth-pam-helper-path=$RSTUDIO_AUTH
 auth-encrypt-password=0
 auth-pam-require-password-prompt=0
@@ -69,4 +70,4 @@ set -x
 # Launch the RStudio Server
 echo "Starting up rserver..."
 
-rserver --auth-timeout-minutes=0 --config-file "$RSERVER_CONF"
+rserver --config-file "$RSERVER_CONF"
