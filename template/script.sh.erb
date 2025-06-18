@@ -44,6 +44,7 @@ cat > "${RSERVER_CONF}" << EOL
 www-port=$port
 database-config-file=$DB_CONF_FILE
 auth-none=0
+auth-timeout-minutes=0
 auth-pam-helper-path=$RSTUDIO_AUTH
 auth-encrypt-password=0
 auth-pam-require-password-prompt=0
@@ -61,7 +62,7 @@ EOL
 # Create DB if there isn't one and update data dir
 if [ ! -e $DB_CONF_FILE ]
 then
-  cp "$RSTUDIO_ROOT/extras/conf/database.conf" "$DB_CONF_FILE"
+  mkdir -p "$RSTUDIO_CONFIG_DIR" && cp "$RSTUDIO_ROOT/extras/conf/database.conf" "$DB_CONF_FILE"
   perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=$RSTUDIO_DATA_DIR@" "$DB_CONF_FILE"
 fi
 
@@ -69,4 +70,4 @@ set -x
 # Launch the RStudio Server
 echo "Starting up rserver..."
 
-rserver --config-file "$RSERVER_CONF" 
+rserver --config-file "$RSERVER_CONF"
