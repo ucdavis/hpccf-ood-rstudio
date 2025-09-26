@@ -55,6 +55,7 @@ server-pid-file=$RSTUDIO_DATA_DIR/rstudio-server.pid
 rsession-path=$RSESSION_WRAPPER_FILE
 rsession-which-r=$RSTUDIO_WHICH_R
 rsession-ld-library-path=$CONDA_PREFIX/lib
+rsession-proxy-max-wait-secs=300
 server-working-dir=<%= context.path.to_s %>
 EOL
 )
