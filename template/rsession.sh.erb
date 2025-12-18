@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Log all output from this script
-export RSESSION_LOG_FILE="<%= session.staged_root.join("rsession.log") %>"
+export RSESSION_LOG_FILE=<%= "#{staged_root}/rsession.log" %>
 exec &>>"${RSESSION_LOG_FILE}"
 
 # Launch the original command
