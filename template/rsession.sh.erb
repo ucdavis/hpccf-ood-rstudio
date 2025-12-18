@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 # Log all output from this script
-export RSESSION_LOG_FILE=<%= "#{staged_root}/rsession.log" %>
-
+export RSESSION_LOG_FILE="<%= session.staged_root.join("rsession.log") %>"
 exec &>>"${RSESSION_LOG_FILE}"
 
 # Launch the original command
 echo "Launching rsession..."
 set -x
-exec rsession --r-libs-user "${R_LIBS_USER}" "${@}"
+exec rsession "${@}"
