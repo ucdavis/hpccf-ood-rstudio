@@ -5,6 +5,8 @@ batch_connect:
     - csrf_token
 script:
   native:
+    - "--export"
+    - "ALL"
     - "--cpus-per-task"
     - "<%= cores %>"
     - "--mem"
