@@ -5,6 +5,8 @@ batch_connect:
     - csrf_token
 script:
   native:
+    - "--export"
+    - "ALL"
     - "--cpus-per-task"
     - "<%= cores %>"
     - "--mem"
@@ -15,5 +17,5 @@ script:
     <%- end -%>
   job_environment:
     PATH: /bin:/sbin:/usr/bin:/usr/sbin:/snap/bin:/opt/puppetlabs/bin
-    HOME: <%= ENV['HOME'].to_s %>
-    USER: <%= ENV['USER'].to_s %>
+    HOME: <%= ENV['HOME'] %>
+    USER: <%= ENV['USER'] %>
