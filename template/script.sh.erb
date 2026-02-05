@@ -20,13 +20,15 @@ setup_env() {
 
 setup_env
 
-# Generate rserver configuration file with secure file permissions
+# Generate rserver config file with secure perms
 (
+umask 077
 cat > "$RSERVER_CONF" << EOL
-www-port=$port
+www-port=$RSTUDIO_PORT
 database-config-file=$DB_CONF_FILE
 auth-none=0
 auth-timeout-minutes=0
+auth-stay-signed-in-days=60
 auth-pam-helper-path=$RSTUDIO_AUTH
 auth-encrypt-password=0
 auth-pam-require-password-prompt=0
@@ -42,6 +44,11 @@ server-working-dir=<%= context.path %>
 EOL
 )
 
+# Generate rsession config file with secure perms
+cat > "$RSESSION_CONF" << EOL
+r-libs-user=$R_LIBS_USER
+EOL
+
 # Create DB if there isn't one and update data dir
 if [ ! -e $DB_CONF_FILE ]
 then
@@ -49,8 +56,7 @@ then
   perl -pi -e "s@#directory=/var/lib/rstudio-server@directory=$RSTUDIO_DATA_DIR@" "$DB_CONF_FILE"
 fi
 
-set -x
 # Launch the RStudio Server
 echo "Starting up rserver..."
-
+set -x
 rserver --config-file "$RSERVER_CONF"
