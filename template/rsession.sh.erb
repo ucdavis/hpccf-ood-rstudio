@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Log all output from this script
+exec &>><%= "#{session.staged_root}/rsession.log" %>
+
+# Launch the original command
+echo "Launching rsession..."
+set -x
+exec rsession --config-file <%= "#{session.staged_root}/rsession.conf" %> "${@}"
