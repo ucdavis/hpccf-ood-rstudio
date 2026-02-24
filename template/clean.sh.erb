@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 <% if context.clear_cache %>
-mv -f ~/.local/share/rstudio{,.bak}
+mv -f $R_LIBS_USER{,.bak}
 <% end %>

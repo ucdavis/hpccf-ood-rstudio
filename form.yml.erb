@@ -79,9 +79,15 @@ attributes:
       - /quobyte
     help: |
       Select the directory wherein you want to open and use this app
-    clear_cache:
-      widget: "check_box"
-      label: "Clear R libs cache"
-      cacheable: false
-      help: |
-        Check this box if you want to clear your R libs cache at job end
+  fresh_start:
+    widget: "check_box"
+    label: "Start with new session"
+    cacheable: false
+    help: |
+      Check this box if you do not want to resume from a previous saved session 
+  clear_cache:
+    widget: "check_box"
+    label: "Clear R libs cache"
+    cacheable: false
+    help: |
+      Check this box if you want to delete all user installed R libs at job end
