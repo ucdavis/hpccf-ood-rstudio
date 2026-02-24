@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+<% if context.clear_cache %>
+mv -f ~/.local/share/rstudio{,.bak}
+<% end %>

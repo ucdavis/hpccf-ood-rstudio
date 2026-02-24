@@ -63,13 +63,13 @@ attributes:
     value: "r-4.4.2"
     cacheable: false
     help: |
-      Enter a specific conda environment (i.e r-4.4.2) to activate as your R installation.
+      Enter a specific conda environment (i.e r-4.4.2) to activate as your R installation
   bc_num_hours:
     help: |
       Your job will be automatically killed after this amount of time
   path:
     widget: "path_selector"
-    label: "Working Directory"
+    label: "Working directory"
     value: <%= ENV['HOME'] %>
     show_hidden: true
     show_files: false
@@ -79,3 +79,9 @@ attributes:
       - /quobyte
     help: |
       Select the directory wherein you want to open and use this app
+    clear_cache:
+      widget: "check_box"
+      label: "Clear R libs cache"
+      cacheable: false
+      help: |
+        Check this box if you want to clear your R libs cache at job end
